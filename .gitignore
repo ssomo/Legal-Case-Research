@@ -19,3 +19,4 @@ chroma_db/
 *.parquet
 *.pkl
 *.pickle
+*.csv
