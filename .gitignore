@@ -1,0 +1,21 @@
+# Python & Jupyter
+__pycache__/
+.ipynb_checkpoints/
+.pytest_cache/
+*.pyc
+
+# Virtual Enviroment
+.venv/
+venv/
+
+# Enviroment Variables
+.env
+
+# System
+.DS_Store
+
+# Data & Vector Database
+chroma_db/
+*.parquet
+*.pkl
+*.pickle
