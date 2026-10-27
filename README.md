@@ -41,6 +41,7 @@ Legal-Case-Search/
 
 ## Setup
 Follow these steps after cloning the repo.
+
 **Python Version:** Python 3.9.6 or newer
 
 ```
