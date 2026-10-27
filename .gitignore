@@ -10,6 +10,8 @@ venv/
 
 # Enviroment Variables
 .env
+.env.*
+!.env.example
 
 # System
 .DS_Store
