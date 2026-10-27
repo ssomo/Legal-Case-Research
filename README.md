@@ -35,6 +35,7 @@ Legal-Case-Search/
 ├── app.py
 ├── config.py
 ├── requirements.txt
+├── README.md
 ├── .gitignore
 └── .env.example
 ```
