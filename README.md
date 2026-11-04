@@ -21,7 +21,7 @@ Legal-Case-Search/
 │   └── raw/
 │       └── nc_ip_cases.csv # Generated locally
 ├── notebooks/
-│   └── data_exploration.ipynb/
+│   └── data_exploration.ipynb
 ├── src/
 │   ├── __init.py__/
 │   ├── prepare_data.py
