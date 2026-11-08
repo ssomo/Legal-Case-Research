@@ -4,7 +4,6 @@ from __future__ import annotations
 import csv
 import os
 import re
-from pathlib import Path
 
 from datasets import load_dataset
 
@@ -112,6 +111,7 @@ def main() -> None:
     matching_cases = 0
     saved_opinions = 0
     blank_texts = 0
+    blank_texts_in_matching_cases = 0
 
     with temp_path.open("w", encoding="utf-8", newline="") as csv_file:
         writer = csv.DictWriter(csv_file, fieldnames=COLUMNS)
@@ -126,17 +126,12 @@ def main() -> None:
                 continue
 
             nc_cases += 1
+            case_blank_texts = 0
             opinions = case.get("opinions")
 
             if opinions is None:
                 opinions = []
             elif not isinstance(opinions, (list, tuple)):
-                try:
-                    opinions = list(opinions)
-                except TypeError:
-                    continue
-
-            if not isinstance(opinions, (list, tuple)):
                 try:
                     opinions = list(opinions)
                 except TypeError:
@@ -154,6 +149,7 @@ def main() -> None:
                     text = ""
                 if not text.strip():
                     blank_texts += 1
+                    case_blank_texts += 1
                     continue
 
                 matched_terms = {
@@ -184,6 +180,7 @@ def main() -> None:
 
             if case_matched:
                 matching_cases += 1
+                blank_texts_in_matching_cases += case_blank_texts
 
     temp_path.replace(output_path)
 
@@ -191,7 +188,8 @@ def main() -> None:
     print(f"North Carolina cases: {nc_cases:,}")
     print(f"Cases matching keywords in any opinion: {matching_cases:,}")
     print(f"Opinion records saved: {saved_opinions:,}")
-    print(f"Opinions with blank text: {blank_texts:,}")
+    print(f"Opinions with blank text across NC cases: {blank_texts:,}")
+    print(f"Opinions with blank text in keyword-matching cases: {blank_texts_in_matching_cases:,}")
     print(f"Saved to: {output_path}")
 
 
