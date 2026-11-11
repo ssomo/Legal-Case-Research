@@ -18,9 +18,11 @@ PROCESSED_DATA_PATH = PROCESSED_DIR / "nc_ip_opinion_chunks.csv"
 
 # Ollama Configurations
 OLLAMA_BASE_URL = "http://localhost:11434"
-OLLAMA_CHAT_MODEL = "gemma4:e2b"
 OLLAMA_EMBED_MODEL = "nomic-embed-text:latest"
 OLLAMA_EMBED_DIM = 768
+
+# Gemini Configurations
+GEMINI_MODEL = "gemini-3.5-flash-lite"
 
 # ChromaDB Configuration
 COLLECTION_NAME = "nc_ip_opinion_chunks"
