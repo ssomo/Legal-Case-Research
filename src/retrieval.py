@@ -61,3 +61,62 @@ def retrieve_relevant_chunks(query: str, vector_store: Chroma, k: int = 5) -> li
             break
 
     return unique_cases
+
+def highlight_relevant_sentences(query: str, document: str, embeddings, top_n: int = 3) -> list:
+    """Find the sentences most relevant to a user's query."""
+    # Validate the parameters
+    if not isinstance(query, str) or not query.strip():
+        raise ValueError("Query must be a non-empty string.")
+
+    if not isinstance(document, str) or not document.strip():
+        return []
+
+    if not isinstance(top_n, int) or isinstance(top_n, bool) or top_n <= 0:
+        raise ValueError("top_n must be a positive integer.")
+    
+    # Split the document into sentences
+    sentences = sent_tokenize(document)
+
+    # Remove short sentence fragments
+    sentences = [sentence.strip() for sentence in sentences if len(sentence.strip()) >= 8]
+
+    if not sentences:
+        return []
+
+    # Convert the sentences into LangChain documents
+    sentence_docs = [Document(page_content=sentence, metadata={"index": i}) for i, sentence in enumerate(sentences)]
+
+    # Create an in-memory vector store
+    vector_store = InMemoryVectorStore.from_documents(
+        documents=sentence_docs,
+        embedding=embeddings
+    )
+
+    # Retrieve the most relevant sentences
+    results = vector_store.similarity_search_with_score(
+        query=query,
+        k=min(top_n, len(sentence_docs))
+    )
+
+    return results
+
+def retrieve_full_opinion(case_id: str, vector_store: Chroma) -> str:
+    """Retrieve and reconstruct the full opinion from its chunks."""
+    # Retrieve all chunks associated with a case
+    results = vector_store._collection.get(
+        where={"case_id": case_id},
+        include=["documents", 'metadatas']
+    )
+
+    documents = results['documents']
+    metadatas = results['metadatas']
+
+    if not documents:
+        return ""
+
+    # Combine chunks in their original order
+    chunks = sorted(zip(documents, metadatas), key=lambda x: x[1].get("chunk_index", 0))
+
+    full_opinion = "\n".join(text for text, metadata in chunks)
+
+    return full_opinion
