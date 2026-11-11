@@ -99,3 +99,24 @@ def highlight_relevant_sentences(query: str, document: str, embeddings, top_n: i
     )
 
     return results
+
+def retrieve_full_opinion(case_id: str, vector_store: Chroma) -> str:
+    """Retrieve and reconstruct the full opinion from its chunks."""
+    # Retrieve all chunks associated with a case
+    results = vector_store._collection.get(
+        where={"case_id": case_id},
+        include=["documents", 'metadatas']
+    )
+
+    documents = results['documents']
+    metadatas = results['metadatas']
+
+    if not documents:
+        return ""
+
+    # Combine chunks in their original order
+    chunks = sorted(zip(documents, metadatas), key=lambda x: x[1].get("chunk_index", 0))
+
+    full_opinion = "\n".join(text for text, metadata in chunks)
+
+    return full_opinion
