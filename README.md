@@ -19,9 +19,9 @@ The dataset is filtered to extract North Carolina court cases potentially relate
 Legal-Case-Search/
 ├── data/
 │   └── raw/
-│       └── nc_ip_cases.csv # Generated locally
-├── notebooks/
-│   └── data_exploration.ipynb
+│       └── nc_ip_opinions.csv # Generated locally
+│   └── processed/
+│       └── nc_ip_opinion_chunks.csv # Generated locally
 ├── src/
 │   ├── __init.py__/
 │   ├── prepare_data.py
@@ -62,8 +62,12 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-## Running the data pipeline
-From the project root, run:
+## Running the Data Preprocessing Pipeline
+From the project root, run the following commands in order:
 ```
-python -m src.prepare_data
+python -m src.prepare_opinions
+python -m src.preprocessing
+python -m src.embeddings
 ```
+
+This pipeline extracts North Carolina intellectual property and copyright cases from the Harvard COLD Cases dataset, cleans and chunks the opinions, and generates vector embeddings using Ollama's nomic-embed-text model. The embeddings, text chunks, and associated metadata are stored in ChromaDB for semantic search and retrieval.
