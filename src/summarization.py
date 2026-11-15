@@ -25,7 +25,7 @@ class GeminiSummarizer:
         self.client = genai.Client(api_key=api_key)
         self.model = model
         
-    def summarize_text(self, document: str, case_name: str = "Unknown") -> str:
+    def summarize_text(self, document: str, case_name: str = "Unknown", query: str | None = None) -> str:
         """Summarize the document's text"""
 
         prompt = f"""
@@ -33,7 +33,10 @@ class GeminiSummarizer:
 
         Summarize the following court opinion.
 
-        Case Name: {case_name}
+        CASE NAME: {case_name}
+
+        RESEARCH QUESTION:
+        {query if query else "No specific research question provided."}
 
         SOURCE TEXT:
         {document}
@@ -55,6 +58,12 @@ class GeminiSummarizer:
         5. Holding and Outcome:
         - Explain the court's decision or judge's ruling based on the source text.
 
+        6. Relevance to Research Question
+        - Explain how the case relates to the research question.
+
+        7. Key Takeaways
+        - Provide 2-4 concise bullet points highlighting the most important findings.
+
         IMPORTANT INSTRUCTIONS:
         - Use only information supported by the source text.
         - Do not invent facts, legal arguments. or court holdings.
@@ -68,7 +77,7 @@ class GeminiSummarizer:
             contents=prompt,
             config={
                 "temperature": 0.2,
-                "max_output_tokens": 1500
+                "max_output_tokens": 2000
             }
         )
 
@@ -93,6 +102,8 @@ class GeminiSummarizer:
             # Extract the case metadata
             case_id = document.metadata.get("case_id")
             case_name = document.metadata.get("case_name", "Unknown")
+            court_name = document.metadata.get("court_full_name", "Unknown")
+            date_filed = document.metadata.get("date_filed", "Unknown")
 
             # Retrieve all chunks for the case
             full_document = retrieve_full_opinion(
@@ -105,15 +116,18 @@ class GeminiSummarizer:
 
             summary = self.summarize_text(
                 document=full_document,
-                case_name=case_name
+                case_name=case_name,
+                query=query
             )
 
             summaries.append({
                 "case_id": case_id,
                 "case_name": case_name,
+                "court_name": court_name,
+                "date_filed": date_filed,
                 "relevance_score": score,
+                "full_document": full_document,
                 "summary": summary
             })
 
         return summaries
-    
